@@ -1,7 +1,7 @@
 import {Button} from "@/components/ui/button"
 import {useTheme} from "@/components/theme-provider"
 
-import {THEME} from "@/constants.ts";
+import {THEME} from "@/constants/theme.ts";
 
 import {Moon, Sun} from "lucide-react"
 
