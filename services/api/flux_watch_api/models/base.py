@@ -11,6 +11,7 @@ class APIModel(BaseModel):
         alias_generator=to_camel,
         populate_by_name=True,  # allow snake_case input too
         extra="forbid",  # ideal, but can be overridden in child class
+        from_attributes=True,
     )
 
     def get_orm(self):

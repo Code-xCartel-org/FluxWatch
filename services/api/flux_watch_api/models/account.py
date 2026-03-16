@@ -4,13 +4,10 @@ from uuid import UUID
 from flux_watch_api.models.base import APIModel
 
 
-class AccountLogin(APIModel):
+class AccountCreate(APIModel):
+    name: str
     email: str
     password: str
-
-
-class AccountCreate(AccountLogin):
-    name: str
 
 
 class Account(APIModel):

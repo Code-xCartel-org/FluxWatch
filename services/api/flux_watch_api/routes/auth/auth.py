@@ -1,21 +1,28 @@
 from fastapi import APIRouter, Depends
 from starlette import status
+from starlette.requests import Request
 
-from flux_watch_api.models.account import AccountCreate, AccountLogin, AccountSession
+from flux_watch_api.managers.auth.auth_manager import AuthManager
+from flux_watch_api.models.account import AccountCreate, AccountSession
 from flux_watch_api.models.response_schema import MessageResponse
-from flux_watch_api.repository.auth.auth import AuthRepository
 
 auth_router = APIRouter()
 
 
 @auth_router.post("/sign-up", tags=["sign-up"], status_code=status.HTTP_201_CREATED)
-def sign_up(account: AccountCreate, auth_repo: AuthRepository = Depends()):
-    auth_repo.create_account(account)
+def sign_up(account: AccountCreate, auth_manager: AuthManager = Depends()):
+    auth_manager.create_new(
+        name=account.name,
+        email=account.email,
+        password=account.password,
+    )
     return MessageResponse(msg="Account created successfully")
 
 
 @auth_router.post(
     "/sign-in", tags=["sign-in"], status_code=status.HTTP_200_OK, response_model=AccountSession
 )
-def sign_in(account: AccountLogin, auth_repo: AuthRepository = Depends()):
-    return auth_repo.authenticate_account(account)
+def sign_in(request: Request, auth_manager: AuthManager = Depends()):
+    return auth_manager.authenticate_and_save(
+        auth_header=request.headers.get("Authorization", None)
+    )

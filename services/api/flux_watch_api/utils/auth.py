@@ -1,12 +1,19 @@
 import base64
 import uuid
+from dataclasses import dataclass
 from datetime import datetime, timedelta
 
 import bcrypt
 
+from flux_watch_api.managers.auth.plugins.builder import Scheme
 from flux_watch_api.schema import AccountORM, AccountSessionORM
 
-DEFAULT_TTL = 24 * 60 * 60 * 1000  # one day in ms
+
+@dataclass
+class AuthUser:
+    auth_scheme: Scheme
+    credentials: str
+    principal: str
 
 
 class AuthUtils:
