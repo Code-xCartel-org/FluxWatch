@@ -14,5 +14,5 @@ class Scheme(StrEnum):
 def build_plugins(repo: Repository, auth_utils: AuthUtils):
     return {
         Scheme.RESIDENT: ResidentPlugin(repo=repo, auth_utils=auth_utils),
-        Scheme.TOKEN: TokenPlugin,
+        Scheme.TOKEN: TokenPlugin(repo=repo, auth_utils=auth_utils),
     }

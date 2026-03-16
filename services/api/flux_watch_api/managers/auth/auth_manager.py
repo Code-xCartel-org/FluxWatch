@@ -35,12 +35,16 @@ class AuthManager:
 
     def authenticate(self, auth_header: str) -> AccountSession:
         _session = self._authenticate(auth_header=auth_header)
-        return AccountSession.model_validate(_session)
+        return AccountSession.model_validate(_session).enrich(
+            session=_session, auth_utils=self.auth_utils
+        )
 
     def authenticate_and_save(self, auth_header: str) -> AccountSession:
         _session = self._authenticate(auth_header=auth_header)
         session = self.repo.add_one(_session)
-        return AccountSession.model_validate(session)
+        return AccountSession.model_validate(session).enrich(
+            session=session, auth_utils=self.auth_utils
+        )
 
     def create_new(self, name: str, email: str, password: str) -> None:
         hashed_pass = self.auth_utils.hash_password(password)

@@ -40,7 +40,6 @@ class AuthUtils:
         return AccountSessionORM(
             id=_id,
             account_id=account.id,
-            session_token=self.make_token(_id, account),
             ttl=self.make_ttl(ttl_days),
             account=account,
         )

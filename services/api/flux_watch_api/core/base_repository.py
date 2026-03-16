@@ -29,3 +29,6 @@ class Repository:
 
     def get_many(self, *args, **kwargs):
         return self._client.get_many(*args, **kwargs)
+
+    def delete_one(self, *args, **kwargs):
+        return self._client.delete_one(*args, **kwargs)

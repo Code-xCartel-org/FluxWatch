@@ -1,8 +1,8 @@
 import logging
-from typing import Any, TypeVar
+from typing import TypeVar
 
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import DeclarativeBase, Session
 
 from flux_watch_api.database.query_builder.base import QueryModel
 from flux_watch_api.database.query_builder.builder import QueryBuilder
@@ -18,7 +18,9 @@ class SQLClient:
     def __init__(self, session: Session = InjectSession()):
         self.session = session
 
-    def add_one(self, obj: Any):
+    def add_one(self, obj: DeclarativeBase):
+        if not isinstance(obj, DeclarativeBase):
+            raise TypeError("obj must be a DeclarativeBase")
         try:
             self.session.add(obj)
             self.session.flush()
@@ -43,3 +45,8 @@ class SQLClient:
         rows = self.session.execute(data_query).scalars().all()
         total_count = self.session.execute(count_query).scalar_one()
         return rows, total_count
+
+    def delete_one(self, obj: DeclarativeBase):
+        if not isinstance(obj, DeclarativeBase):
+            raise TypeError("obj must be a DeclarativeBase")
+        self.session.delete(obj)

@@ -1,19 +1,10 @@
 from flux_watch_api.core.base_repository import Repository
-from flux_watch_api.database.query_builder.base import QueryModel
-from flux_watch_api.database.query_builder.features import FilterFeature, ModelFeature
 from flux_watch_api.errors.rest_errors import UnauthorizedError
-from flux_watch_api.managers.auth.plugins.abstract import Plugin
+from flux_watch_api.managers.auth.plugins.abstract import AccountSearch, Plugin
 from flux_watch_api.managers.auth.plugins.builder import Scheme
 from flux_watch_api.schema import AccountORM, AccountSessionORM
 from flux_watch_api.utils.auth import AuthUser, AuthUtils
 from flux_watch_api.utils.utilities import extract_auth_user
-
-
-class AccountSearch(QueryModel):
-    features = [
-        ModelFeature(AccountORM),
-        FilterFeature("principal"),
-    ]
 
 
 class ResidentPlugin(Plugin):
