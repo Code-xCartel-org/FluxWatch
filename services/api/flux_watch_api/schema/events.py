@@ -4,10 +4,11 @@ from sqlalchemy import Integer, Text
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
+from flux_watch_api.schema.mixins.parent_mixin import ParentMixin
 from flux_watch_api.schema.utils.base import Base
 
 
-class EventORM(Base):
+class EventORM(Base, ParentMixin):
     __tablename__ = "events"
 
     entity_type: Mapped[str] = mapped_column(Text, nullable=False)

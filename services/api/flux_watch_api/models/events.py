@@ -57,8 +57,9 @@ class Event(EventCreate):
     event_id: UUID
     occurred_at: datetime
     event_version: int = 1
+    parent: str
 
-    def serealize(self) -> EventORM:
+    def serealize(self, parent: str) -> EventORM:
         return EventORM(
             entity_type=self.entity.type,
             entity_id=self.entity.id,
@@ -69,6 +70,7 @@ class Event(EventCreate):
             actor_id=self.actor.id if self.actor else None,
             context=self.context.model_dump() if self.context else None,
             payload=self.payload,
+            parent=parent,
         )
 
     class Config:

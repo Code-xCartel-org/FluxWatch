@@ -21,4 +21,5 @@ def deserialize_events(obj: EventORM) -> Event:
         else None,
         context=EventContext(**obj.context) if obj.context else None,
         payload=obj.payload or {},
+        parent=obj.parent,
     )

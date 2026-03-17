@@ -15,3 +15,8 @@ class AlreadyExistsError(HTTPException):
 class UnauthorizedError(HTTPException):
     def __init__(self, detail: str = "Unauthorized"):
         super().__init__(status_code=status.HTTP_401_UNAUTHORIZED, detail=detail)
+
+
+class TooManyRequestsError(HTTPException):
+    def __init__(self, detail: str = "Too many requests made"):
+        super().__init__(status_code=status.HTTP_429_TOO_MANY_REQUESTS, detail=detail)

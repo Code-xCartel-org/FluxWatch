@@ -17,3 +17,7 @@ class ListResponse(APIModel, Generic[T]):
 
 class MessageResponse(APIModel):
     msg: str
+
+
+class KeyResponse(APIModel):
+    key: str

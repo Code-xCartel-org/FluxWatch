@@ -8,6 +8,7 @@ from flux_watch_api.schema.utils.base import Base
 
 if TYPE_CHECKING:
     from flux_watch_api.schema.account_creds import AccountCredsORM
+    from flux_watch_api.schema.account_keys import AccountApiKeyORM
 
 
 class AccountORM(Base):
@@ -25,4 +26,8 @@ class AccountORM(Base):
 
     sessions: Mapped[list["AccountSessionORM"]] = relationship(
         "AccountSessionORM", back_populates="account", cascade="all, delete-orphan"
+    )
+
+    api_key: Mapped["AccountApiKeyORM"] = relationship(
+        "AccountApiKeyORM", back_populates="account", uselist=False, cascade="all, delete-orphan"
     )

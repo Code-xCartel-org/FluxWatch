@@ -11,3 +11,7 @@ def extract_auth_user(scheme: Scheme, encoded: str) -> AuthUser:
         return AuthUser(auth_scheme=scheme, credentials=creds, principal=principal)
     except (UnicodeDecodeError, ValueError) as e:
         raise UnauthorizedError(detail="Invalid token") from e
+
+
+def key_auth_user(scheme: Scheme, encoded: str) -> AuthUser:
+    return AuthUser(auth_scheme=scheme, credentials=encoded, principal="")

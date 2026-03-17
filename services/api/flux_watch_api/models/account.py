@@ -38,3 +38,9 @@ class AccountSession(APIModel):
     access_token: str
     ttl: datetime.datetime
     account: Account
+
+
+class ApiKey(APIModel):
+    created_at: datetime.datetime
+    last_used_at: datetime.datetime | None
+    is_active: bool

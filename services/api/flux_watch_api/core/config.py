@@ -23,6 +23,9 @@ class AppConfig:
 
     PLATFORM_LINK = get_env("PLATFORM_LINK", "http://localhost:8000")
 
+    API_KEY_TTL_DAYS = get_env("API_KEY_TTL_DAYS", 30)
+    API_KEY_DAILY_LIMIT = get_env("API_KEY_DAILY_LIMIT", 86400)
+
     @cached_property
     def skip_auth_routes(self):
         return (

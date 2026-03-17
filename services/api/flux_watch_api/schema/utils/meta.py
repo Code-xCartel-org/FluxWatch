@@ -6,3 +6,4 @@ class MetaFields(StrEnum):
     CREATED_AT = "created_at"
     UPDATED_AT = "updated_at"
     EXPIRED = "is_expired"
+    PARENT = "parent"
