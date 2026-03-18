@@ -1,10 +1,12 @@
 from fastapi import APIRouter, BackgroundTasks, Depends
+from fastapi import Query as Q
 from starlette import status
 from starlette.requests import Request
 
 from flux_watch_api.core.config import AppConfig
 from flux_watch_api.managers.auth.auth_manager import AuthManager
 from flux_watch_api.models.account import AccountCreate, AccountSession
+from flux_watch_api.models.auth import LogoutScope
 from flux_watch_api.models.response_schema import MessageResponse
 from flux_watch_api.services.email_service import EmailService
 
@@ -45,6 +47,13 @@ def sign_up(
 def sign_in(request: Request, auth_manager: AuthManager = Depends()):
     return auth_manager.authenticate_and_save(
         auth_header=request.headers.get("Authorization", None)
+    )
+
+
+@auth_router.delete("/sign-out", tags=["logout"], status_code=status.HTTP_200_OK)
+def sign_out(request: Request, scope: LogoutScope = Q(...), auth_manager: AuthManager = Depends()):
+    return auth_manager.delete_sessions(
+        auth_header=request.headers.get("Authorization"), scope=scope
     )
 
 

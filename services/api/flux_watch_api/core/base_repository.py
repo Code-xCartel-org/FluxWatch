@@ -30,3 +30,6 @@ class Repository:
 
     def delete_one(self, *args, **kwargs):
         return self._client.delete_one(*args, **kwargs)
+
+    def explicit_commit(self):
+        return self._client.explicit_commit()
