@@ -1,11 +1,14 @@
 import logging
-from typing import Any, TypeVar
+from typing import TypeVar
 
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from flux_watch_api.database.query_builder.base import QueryModel
 from flux_watch_api.database.query_builder.builder import QueryBuilder
 from flux_watch_api.database.session import InjectSession
+from flux_watch_api.errors.rest_errors import AlreadyExistsError, NotFoundError
+from flux_watch_api.schema.utils.base import Base
 
 T = TypeVar("T")
 
@@ -16,15 +19,24 @@ class SQLClient:
     def __init__(self, session: Session = InjectSession()):
         self.session = session
 
-    def add_one(self, obj: Any):
-        self.session.add(obj)
-        return obj
+    def add_one(self, obj: Base):
+        if not isinstance(obj, Base):
+            raise TypeError("obj must be a DeclarativeBase")
+        try:
+            self.session.add(obj)
+            self.session.flush()
+            self.session.refresh(obj)
+            return obj
+        except IntegrityError as err:
+            raise AlreadyExistsError from err
 
     def get_one(self, search_model: QueryModel, params) -> T | None:
         builder = QueryBuilder(search_model, params)
-        query = builder.build(paginate=False, sort=False)
+        query, _ = builder.build(paginate=False, sort=False)
         logger.info(f"executing query: {query}")
         result = self.session.execute(query).scalar_one_or_none()
+        if not result:
+            raise NotFoundError
         return result
 
     def get_many(self, search_model: QueryModel, params) -> T | None:
@@ -34,3 +46,14 @@ class SQLClient:
         rows = self.session.execute(data_query).scalars().all()
         total_count = self.session.execute(count_query).scalar_one()
         return rows, total_count
+
+    def delete_one(self, obj: Base, archive=True):
+        if not isinstance(obj, Base):
+            raise TypeError(f"{obj.__name__} must be a DeclarativeBase")
+        if not archive:
+            self.session.delete(obj)
+        else:
+            if hasattr(obj, "expired"):
+                obj.expired = True
+            else:
+                raise AttributeError(f"{obj.__name__} does not have 'expired' field")

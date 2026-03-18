@@ -8,6 +8,7 @@ from flux_watch_api.database.redis import Redis
 from flux_watch_api.models.events import Event
 from flux_watch_api.models.response_schema import ListResponse, Meta
 from flux_watch_api.schema.events import EventORM
+from flux_watch_api.schema.utils.meta import MetaFields
 from flux_watch_api.utils.constants import REDIS_EVENT_PROCESSOR_KEY
 from flux_watch_api.utils.orm_mapper import deserialize_events
 
@@ -18,7 +19,8 @@ CACHE_BUFFER = []
 class EventsSearch(QueryModel):
     features = [
         ModelFeature(EventORM),
-        FilterFeature("event_id"),
+        FilterFeature(field=MetaFields.ID),
+        FilterFeature(field=MetaFields.PARENT),
     ]
 
     default_ordering = ["-occurred_at"]
@@ -35,7 +37,7 @@ class EventsRepository:
         if len(CACHE_BUFFER) >= BUFFER_SIZE:
             redis: Redis = registry.resolve(Redis)
             redis.client.rpush(REDIS_EVENT_PROCESSOR_KEY, *CACHE_BUFFER)
-        return self.repo.add_one(event.serealize())
+        return self.repo.add_one(event.serealize(parent=self.repo.session_account.principal))
 
     def get_event_by_id(self, event_id: str) -> Event:
         raw_event = self.repo.get_one(EventsSearch, {"event_id": event_id})
