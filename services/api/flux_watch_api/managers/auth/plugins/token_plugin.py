@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime, timezone
 
 from flux_watch_api.core.base_repository import Repository
@@ -9,6 +10,8 @@ from flux_watch_api.models.user import AuthUser
 from flux_watch_api.schema import AccountORM, AccountSessionORM
 from flux_watch_api.utils.auth import AuthUtils
 from flux_watch_api.utils.utilities import extract_auth_user
+
+logger = logging.getLogger(__name__)
 
 
 class TokenPlugin(Plugin):
@@ -40,15 +43,19 @@ class TokenPlugin(Plugin):
         if not current_session:
             raise UnauthorizedError("Session not found")
 
-        if not hasattr(current_session, "ttl"):
+        if not current_session.ttl:
+            logger.info(f"Deleting session {current_session.id} since it does not have a valid TTL")
             self._handler.delete_one(current_session)
+            self._handler.explicit_commit()
             raise UnauthorizedError("Invalid session")
 
         if current_session.ttl <= datetime.now(timezone.utc):
+            logger.info(f"Deleting session {current_session.id} since it has expired")
             self._handler.delete_one(current_session)
+            self._handler.explicit_commit()
             raise UnauthorizedError("Session expired")
 
-        return self._auth_utils.make_session(account=account)
+        return current_session
 
     def extract(self, cred: str) -> AuthUser:
         return extract_auth_user(scheme=Scheme.TOKEN, encoded=cred)

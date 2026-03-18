@@ -21,7 +21,7 @@ class SQLClient:
 
     def add_one(self, obj: Base):
         if not isinstance(obj, Base):
-            raise TypeError("obj must be a DeclarativeBase")
+            raise TypeError(f"{obj.__class__.__name__} must be of type DeclarativeBase | Base")
         try:
             self.session.add(obj)
             self.session.flush()
@@ -47,13 +47,18 @@ class SQLClient:
         total_count = self.session.execute(count_query).scalar_one()
         return rows, total_count
 
-    def delete_one(self, obj: Base, archive=True):
+    def delete_one(self, obj: Base, archive: bool = True):
         if not isinstance(obj, Base):
-            raise TypeError(f"{obj.__name__} must be a DeclarativeBase")
+            raise TypeError(f"{obj.__class__.__name__} must be of type DeclarativeBase | Base")
         if not archive:
             self.session.delete(obj)
         else:
             if hasattr(obj, "expired"):
                 obj.expired = True
             else:
-                raise AttributeError(f"{obj.__name__} does not have 'expired' field")
+                raise AttributeError(f"{obj.__class__.__name__} does not have 'expired' field")
+
+    # sometimes we need to commit transactions before raising an explicit error,
+    # raising an error would fail the session generator's commit, hence adding this
+    def explicit_commit(self):
+        self.session.commit()

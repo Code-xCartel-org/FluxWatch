@@ -5,6 +5,7 @@ from flux_watch_api.errors.rest_errors import UnauthorizedError
 from flux_watch_api.managers.auth.plugins.abstract import Plugin
 from flux_watch_api.managers.auth.plugins.builder import build_plugins
 from flux_watch_api.models.account import AccountSession
+from flux_watch_api.models.auth import LogoutScope
 from flux_watch_api.models.user import AuthUser
 from flux_watch_api.schema import AccountCredsORM, AccountORM, AccountSessionORM
 from flux_watch_api.utils.auth import AuthUtils
@@ -70,5 +71,16 @@ class AuthManager:
     def activate_account(self, auth_header: str):
         session = self._authenticate(auth_header=auth_header, skip_active_check=True)
         session.account.is_active = True
-        self.repo.add_one(session.account)
-        return
+        return self.repo.add_one(session.account)
+
+    def delete_sessions(self, auth_header: str, scope: LogoutScope):
+        session = self._authenticate(auth_header=auth_header)
+        if scope == LogoutScope.CURRENT:
+            return self.repo.delete_one(session)
+        else:
+            all_session = [
+                s for s in session.account.sessions if not s.expired
+            ]  # back population??
+            for session in all_session:
+                self.repo.delete_one(session)
+            return None
