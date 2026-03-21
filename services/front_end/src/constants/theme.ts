@@ -4,4 +4,4 @@ const THEME = {
     SYSTEM: 'system',
 }
 
-export { THEME }
+export {THEME}

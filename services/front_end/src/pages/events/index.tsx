@@ -1,4 +1,4 @@
-import {useGetEventsQuery} from "@/store/api/events";
+import {useGetEventsQuery} from "@/services/eventsApi";
 
 const Events = () => {
     const {data, isLoading, isError} = useGetEventsQuery({

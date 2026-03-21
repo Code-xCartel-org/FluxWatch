@@ -1,13 +1,9 @@
-import {createBrowserRouter} from "react-router";
-import {RouterProvider} from "react-router/dom";
-import Events from "@/pages/events";
+import Routes from "@/routes";
 
 function App() {
-    const router = createBrowserRouter([
-        {path: "/", Component: Events },
-    ])
-
-    return <RouterProvider router={router}/>
+    return (
+        <Routes/>
+    )
 }
 
 export default App
