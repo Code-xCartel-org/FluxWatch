@@ -6,6 +6,8 @@ const PUBLIC_ROUTES = {
 
 const PROTECTED_ROUTES = {
     HOMEPAGE: "/",
+    SETTINGS: "/settings",
+    SETTINGS_ACCOUNT: "/settings/account",
 } as const;
 
 const APP_ROUTE = {

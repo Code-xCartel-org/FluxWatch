@@ -18,9 +18,9 @@ interface LogoutDialogProps {
 export function LogoutDialog({open, onOpenChange}: LogoutDialogProps) {
     const [logout, {isLoading}] = useLogoutMutation();
 
-    const handleLogout = async (scope: "current" | "all") => {
+    const handleLogout = async () => {
         try {
-            await logout(scope).unwrap();
+            await logout().unwrap();
         } catch (err) {
             console.error("Logout failed:", err);
         } finally {
@@ -30,20 +30,17 @@ export function LogoutDialog({open, onOpenChange}: LogoutDialogProps) {
 
     return (
         <AlertDialog open={open} onOpenChange={onOpenChange}>
-            <AlertDialogContent>
+            <AlertDialogContent size="sm">
                 <AlertDialogHeader>
                     <AlertDialogTitle>Sign out</AlertDialogTitle>
                     <AlertDialogDescription>
-                        Would you like to sign out of the current session or all sessions?
+                        Are you sure you want to sign out?
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                     <AlertDialogCancel disabled={isLoading}>Cancel</AlertDialogCancel>
-                    <AlertDialogAction disabled={isLoading} onClick={() => handleLogout("current")}>
-                        Current Session
-                    </AlertDialogAction>
-                    <AlertDialogAction disabled={isLoading} onClick={() => handleLogout("all")}>
-                        All Sessions
+                    <AlertDialogAction disabled={isLoading} onClick={handleLogout}>
+                        Sign out
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>

@@ -6,10 +6,11 @@ import {
     type FetchBaseQueryError,
 } from "@reduxjs/toolkit/query/react";
 import {logout} from "@/store/slices/authSlice.ts";
+import {clearUser} from "@/store/slices/userSlice.ts";
 import {eraseCookie} from "@/utils/cookies";
 import {type RootState} from "@/store/store";
 import {API_URL} from "@/config.ts";
-import {REDUX_IDENTIFIERS} from "@/constants/redux-identifiers.ts";
+import {REDUX_IDENTIFIERS} from "@/constants/redux.ts";
 import {HEADERS} from "@/constants/headers.ts";
 
 const rawBaseQuery = fetchBaseQuery({
@@ -29,11 +30,12 @@ const baseQueryWithReAuth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQue
     api,
     extraOptions,
 ) => {
-    let result = await rawBaseQuery(args, api, extraOptions);
+    const result = await rawBaseQuery(args, api, extraOptions);
 
     if (result.error && result.error.status === 401) {
         // Force logout if the token is expired or invalid
         eraseCookie(HEADERS.AUTH_TOKEN);
+        api.dispatch(clearUser());
         api.dispatch(logout());
         // Optional: window.location.href = "/login";
     }

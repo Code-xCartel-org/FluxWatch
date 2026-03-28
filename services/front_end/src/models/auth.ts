@@ -9,8 +9,16 @@ export interface Account {
 
 export interface AuthResponse {
     accessToken: string;
-    account: Account;
     ttl: string;
 }
 
-export type LogoutScope = "current" | "all";
+export interface Session {
+    id: string;
+    createdAt: string;
+    updatedAt: string;
+    ttl: string | null;
+}
+
+export interface SessionsResponse {
+    sessions: Session[];
+}
