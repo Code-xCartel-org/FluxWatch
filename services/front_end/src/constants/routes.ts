@@ -1,6 +1,7 @@
 const PUBLIC_ROUTES = {
     LOGIN: "/login",
-    REGISTER: "/register"
+    REGISTER: "/register",
+    ACTIVATE: "/activate"
 } as const;
 
 const PROTECTED_ROUTES = {

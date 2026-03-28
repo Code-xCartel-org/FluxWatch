@@ -15,8 +15,10 @@ import {HEADERS} from "@/constants/headers.ts";
 const rawBaseQuery = fetchBaseQuery({
     baseUrl: API_URL,
     prepareHeaders: (headers, {getState}) => {
-        const token = (getState() as RootState).auth.token;
-        if (token) headers.set(HEADERS.AUTHORIZATION, `${HEADERS.BEARER} ${token}`);
+        if (!headers.has(HEADERS.AUTHORIZATION)) {
+            const token = (getState() as RootState).auth.token;
+            if (token) headers.set(HEADERS.AUTHORIZATION, `${HEADERS.TOKEN} ${token}`);
+        }
         return headers;
     },
 });

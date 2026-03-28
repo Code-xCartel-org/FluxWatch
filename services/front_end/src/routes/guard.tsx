@@ -9,6 +9,5 @@ export const PrivateRoute = () => {
 };
 
 export const PublicRoute = () => {
-    const {isAuthenticated} = useSelector((state: RootState) => state.auth);
-    return !isAuthenticated ? <Outlet/> : <Navigate to="/" replace/>;
+    return <Outlet/>
 };

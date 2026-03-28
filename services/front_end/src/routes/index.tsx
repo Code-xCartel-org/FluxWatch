@@ -6,6 +6,7 @@ import Login from "@/pages/auth/login.tsx";
 import AuthLayout from "@/layouts/AuthLayout.tsx";
 import Events from "@/pages/events";
 import Register from "@/pages/auth/register.tsx";
+import Activate from "@/pages/auth/activate.tsx";
 
 const Routes = () => {
     const router = createBrowserRouter([
@@ -23,6 +24,10 @@ const Routes = () => {
                         {
                             path: APP_ROUTE.REGISTER,
                             Component: Register
+                        },
+                        {
+                            path: APP_ROUTE.ACTIVATE,
+                            Component: Activate
                         }
                     ]
                 },

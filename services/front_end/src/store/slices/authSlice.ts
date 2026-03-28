@@ -2,11 +2,12 @@ import {createSlice, type PayloadAction} from "@reduxjs/toolkit";
 import {eraseCookie, getCookie, setCookie} from "@/utils/cookies";
 import {REDUX_IDENTIFIERS} from "@/constants/redux-identifiers.ts";
 import {HEADERS} from "@/constants/headers.ts";
+import type {Account, AuthResponse} from "@/models/auth.ts";
 
 interface AuthState {
     token: string | null;
     isAuthenticated: boolean;
-    user: any | null;
+    user: Account | null;
 }
 
 const initialState: AuthState = {
@@ -21,12 +22,12 @@ const authSlice = createSlice({
     reducers: {
         login: (
             state,
-            {payload}: PayloadAction<{ user: any; token: string }>
+            {payload}: PayloadAction<AuthResponse>
         ) => {
-            state.user = payload.user;
-            state.token = payload.token;
+            state.user = payload.account;
+            state.token = payload.accessToken;
             state.isAuthenticated = true;
-            setCookie(HEADERS.AUTH_TOKEN, payload.token, 7);
+            setCookie(HEADERS.AUTH_TOKEN, payload.accessToken, payload.ttl);
         },
         logout: (state) => {
             state.user = null;
