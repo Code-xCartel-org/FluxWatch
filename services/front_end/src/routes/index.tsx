@@ -8,6 +8,8 @@ import SettingsLayout from "@/layouts/SettingsLayout.tsx";
 import Events from "@/pages/events";
 import Register from "@/pages/auth/register.tsx";
 import Activate from "@/pages/auth/activate.tsx";
+import ForgotPassword from "@/pages/auth/forgot-password.tsx";
+import ChangePassword from "@/pages/auth/change-password.tsx";
 import AccountSettings from "@/pages/settings/account.tsx";
 
 const Routes = () => {
@@ -37,6 +39,14 @@ const Routes = () => {
                         {
                             path: APP_ROUTE.ACTIVATE,
                             Component: Activate,
+                        },
+                        {
+                            path: APP_ROUTE.FORGOT_PASSWORD,
+                            Component: ForgotPassword,
+                        },
+                        {
+                            path: APP_ROUTE.CHANGE_PASSWORD,
+                            Component: ChangePassword,
                         },
                     ],
                 },

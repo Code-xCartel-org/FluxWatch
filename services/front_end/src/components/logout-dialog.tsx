@@ -8,7 +8,7 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import {useLogoutMutation} from "@/services/authApi.ts";
+import {useSignOutMutation} from "@/services/authApi.ts";
 
 interface LogoutDialogProps {
     open: boolean;
@@ -16,11 +16,11 @@ interface LogoutDialogProps {
 }
 
 export function LogoutDialog({open, onOpenChange}: LogoutDialogProps) {
-    const [logout, {isLoading}] = useLogoutMutation();
+    const [signOut, {isLoading}] = useSignOutMutation();
 
     const handleLogout = async () => {
         try {
-            await logout().unwrap();
+            await signOut({scope: "current"}).unwrap();
         } catch (err) {
             console.error("Logout failed:", err);
         } finally {

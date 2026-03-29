@@ -1,5 +1,5 @@
 import {useEffect} from "react";
-import {Link, useSearchParams} from "react-router";
+import {Link, Navigate, useSearchParams} from "react-router";
 import {AlertCircle, CheckCircle, Loader2, MailCheck} from "lucide-react";
 import {
     Card,
@@ -24,9 +24,9 @@ export default function Activate() {
         }
     }, [token, activate]);
 
+    if (!token) return <Navigate to={APP_ROUTE.HOMEPAGE} replace />;
+
     const getErrorMessage = () => {
-        if (!token)
-            return "No activation token provided. Please check your email for the correct link.";
         if (error && "data" in error) {
             const data = error.data as {detail?: string};
             return data?.detail || "Activation failed. The link may have expired.";

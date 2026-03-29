@@ -1,5 +1,5 @@
 import {Loader2} from "lucide-react";
-import {useRevokeSessionMutation, useLogoutMutation} from "@/services/authApi";
+import {useSignOutMutation} from "@/services/authApi";
 import type {Session} from "@/models/auth";
 
 interface SessionRowProps {
@@ -16,16 +16,14 @@ function formatDate(iso: string) {
 }
 
 export function SessionRow({session, principal, isCurrent}: SessionRowProps) {
-    const [revoke, {isLoading: isRevoking}] = useRevokeSessionMutation();
-    const [logout, {isLoading: isLoggingOut}] = useLogoutMutation();
-    const isLoading = isCurrent ? isLoggingOut : isRevoking;
+    const [signOut, {isLoading}] = useSignOutMutation();
 
     const handleLogout = async () => {
         try {
             if (isCurrent) {
-                await logout().unwrap();
+                await signOut({scope: "current"}).unwrap();
             } else {
-                await revoke({sessionId: session.id, principal}).unwrap();
+                await signOut({scope: "revoke", sessionId: session.id, principal}).unwrap();
             }
         } catch (err) {
             console.error("Session logout failed:", err);

@@ -62,6 +62,14 @@ export default function Login() {
                             control={form.control}
                             disabled={isLoading}
                         />
+                        <div className="text-right">
+                            <Link
+                                to={APP_ROUTE.FORGOT_PASSWORD}
+                                className="text-muted-foreground text-xs hover:underline"
+                            >
+                                Forgot password?
+                            </Link>
+                        </div>
                     </AppFormWrapper>
                 </CardContent>
 

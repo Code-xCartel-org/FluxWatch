@@ -1,7 +1,6 @@
 import {useState} from "react";
 import {ChevronsUpDown, Home, LogOut, Settings} from "lucide-react";
 import {useLocation, useNavigate} from "react-router";
-import {useSelector} from "react-redux";
 import {
     Sidebar,
     SidebarContent,
@@ -23,8 +22,8 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {LogoutDialog} from "@/components/logout-dialog";
+import {useGetSelfQuery} from "@/services/accountApi";
 import {APP_ROUTE} from "@/constants/routes.ts";
-import type {RootState} from "@/store/store";
 
 const navItems = [{title: "Events", icon: Home, path: APP_ROUTE.HOMEPAGE}];
 
@@ -49,7 +48,7 @@ export function AppSidebar() {
     const [logoutOpen, setLogoutOpen] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
-    const user = useSelector((state: RootState) => state.user.user);
+    const {data: user} = useGetSelfQuery();
 
     return (
         <>

@@ -1,10 +1,12 @@
 import {useMemo, useState} from "react";
 import {Check, Copy, Eye, EyeOff, Loader2} from "lucide-react";
 import {useSelector} from "react-redux";
-import {useLogoutAllSessionsMutation} from "@/services/authApi";
-import {useGetSessionsQuery} from "@/services/authApi";
+import {useSignOutMutation, useGetSessionsQuery} from "@/services/authApi";
+import {useGetSelfQuery} from "@/services/accountApi";
 import {useGenerateApiKeyMutation, useGetApiKeyQuery} from "@/services/keysApi";
 import {SessionRow} from "@/components/session-row";
+import {ChangePasswordForm} from "@/components/change-password-form";
+import {Dialog, DialogContent} from "@/components/ui/dialog";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -23,14 +25,15 @@ function maskKey(key: string) {
 
 export default function AccountSettings() {
     const {token, ttl} = useSelector((state: RootState) => state.auth);
-    const user = useSelector((state: RootState) => state.user.user);
-    const [logoutAll, {isLoading: isLoggingOut}] = useLogoutAllSessionsMutation();
+    const {data: user} = useGetSelfQuery();
+    const [signOut, {isLoading: isLoggingOut}] = useSignOutMutation();
     const {data: apiKeyInfo, isLoading: isLoadingKey, isSuccess: isKeyLoaded} = useGetApiKeyQuery();
     const [generateKey, {isLoading: isGenerating}] = useGenerateApiKeyMutation();
     const {data: sessionsData, isLoading: isLoadingSessions} = useGetSessionsQuery();
     const [generatedKey, setGeneratedKey] = useState<string | null>(null);
     const [copied, setCopied] = useState(false);
     const [revealed, setRevealed] = useState(false);
+    const [changePasswordOpen, setChangePasswordOpen] = useState(false);
     const hasKey = isKeyLoaded && !!apiKeyInfo;
 
     const currentSession = useMemo<Session | null>(() => {
@@ -46,7 +49,7 @@ export default function AccountSettings() {
 
     const handleLogoutAll = async () => {
         try {
-            await logoutAll().unwrap();
+            await signOut({scope: "all"}).unwrap();
         } catch (err) {
             console.error("Logout all sessions failed:", err);
         }
@@ -113,6 +116,16 @@ export default function AccountSettings() {
                     </button>
                 </div>
 
+                <div className="flex items-center justify-between py-4">
+                    <span className="text-sm">Change password</span>
+                    <button
+                        onClick={() => setChangePasswordOpen(true)}
+                        className="hover:bg-accent inline-flex h-9 shrink-0 items-center justify-center rounded-md border px-4 text-sm font-medium"
+                    >
+                        Change
+                    </button>
+                </div>
+
                 <div className="flex items-center justify-between border-b py-4">
                     <span className="text-sm">Log out of all devices</span>
                     <button
@@ -172,6 +185,16 @@ export default function AccountSettings() {
                     </table>
                 </div>
             </div>
+
+            {/* Change Password Dialog */}
+            <Dialog open={changePasswordOpen} onOpenChange={setChangePasswordOpen}>
+                <DialogContent className="border-none bg-transparent p-0 shadow-none sm:max-w-md">
+                    <ChangePasswordForm
+                        requireOldPassword
+                        onSuccess={() => setChangePasswordOpen(false)}
+                    />
+                </DialogContent>
+            </Dialog>
 
             {/* API Key Dialog */}
             <AlertDialog

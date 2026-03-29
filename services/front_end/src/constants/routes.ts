@@ -2,6 +2,8 @@ const PUBLIC_ROUTES = {
     LOGIN: "/login",
     REGISTER: "/register",
     ACTIVATE: "/activate",
+    FORGOT_PASSWORD: "/forgot-password",
+    CHANGE_PASSWORD: "/change-password",
 } as const;
 
 const PROTECTED_ROUTES = {
