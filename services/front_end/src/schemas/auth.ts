@@ -28,3 +28,26 @@ export const registerSchema = z
 export type RegisterFormValues = z.infer<typeof registerSchema>;
 
 export type SignUpFormValues = Omit<RegisterFormValues, "confirmPassword">;
+
+export const forgotPasswordSchema = z.object({
+    email: z.email("Invalid email address."),
+});
+
+export type ForgotPasswordFormValues = z.infer<typeof forgotPasswordSchema>;
+
+const passwordField = z
+    .string()
+    .min(8, "Password must be at least 8 characters.")
+    .max(64, "Password should not exceed 64 characters.");
+
+export const changePasswordSchema = z
+    .object({
+        password: passwordField,
+        confirmPassword: passwordField,
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+        message: "Passwords don't match",
+        path: ["confirmPassword"],
+    });
+
+export type ChangePasswordFormValues = z.infer<typeof changePasswordSchema>;

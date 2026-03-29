@@ -1,8 +1,7 @@
 const setCookie = (name: string, value: string, ttl: string) => {
     const expires = "; expires=" + new Date(ttl).toUTCString();
-    console.log();
-    // Secure: only over HTTPS; SameSite=Strict: prevents CSRF
     document.cookie = `${name}=${value || ""}${expires}; path=/; SameSite=Strict; Secure`;
+    document.cookie = `${name}_ttl=${ttl}${expires}; path=/; SameSite=Strict; Secure`;
 };
 
 const getCookie = (name: string) => {
@@ -16,8 +15,13 @@ const getCookie = (name: string) => {
     return null;
 };
 
-const eraseCookie = (name: string) => {
-    document.cookie = name + "=; Max-Age=-99999999; path=/;";
+const getExpiry = (name: string): string | null => {
+    return getCookie(`${name}_ttl`);
 };
 
-export {setCookie, getCookie, eraseCookie};
+const eraseCookie = (name: string) => {
+    document.cookie = name + "=; Max-Age=-99999999; path=/;";
+    document.cookie = name + "_ttl=; Max-Age=-99999999; path=/;";
+};
+
+export {setCookie, getCookie, getExpiry, eraseCookie};
