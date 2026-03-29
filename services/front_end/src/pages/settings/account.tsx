@@ -1,7 +1,10 @@
 import {useMemo, useState} from "react";
 import {Check, Copy, Eye, EyeOff, Loader2} from "lucide-react";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {useSignOutMutation, useGetSessionsQuery} from "@/services/authApi";
+import {logout} from "@/store/slices/authSlice";
+import {eraseCookie} from "@/utils/cookies";
+import {HEADERS} from "@/constants/headers";
 import {useGetSelfQuery} from "@/services/accountApi";
 import {useGenerateApiKeyMutation, useGetApiKeyQuery} from "@/services/keysApi";
 import {SessionRow} from "@/components/session-row";
@@ -33,7 +36,9 @@ export default function AccountSettings() {
     const [generatedKey, setGeneratedKey] = useState<string | null>(null);
     const [copied, setCopied] = useState(false);
     const [revealed, setRevealed] = useState(false);
+    const dispatch = useDispatch();
     const [changePasswordOpen, setChangePasswordOpen] = useState(false);
+    const [passwordChanged, setPasswordChanged] = useState(false);
     const hasKey = isKeyLoaded && !!apiKeyInfo;
 
     const currentSession = useMemo<Session | null>(() => {
@@ -190,11 +195,36 @@ export default function AccountSettings() {
             <Dialog open={changePasswordOpen} onOpenChange={setChangePasswordOpen}>
                 <DialogContent className="border-none bg-transparent p-0 shadow-none sm:max-w-md">
                     <ChangePasswordForm
-                        requireOldPassword
-                        onSuccess={() => setChangePasswordOpen(false)}
+                        onSuccess={() => {
+                            setChangePasswordOpen(false);
+                            setPasswordChanged(true);
+                        }}
                     />
                 </DialogContent>
             </Dialog>
+
+            {/* Password Changed Alert */}
+            <AlertDialog open={passwordChanged}>
+                <AlertDialogContent size="sm">
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Password updated</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Your password has been changed. Please sign in again to verify your new
+                            credentials.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogAction
+                            onClick={() => {
+                                eraseCookie(HEADERS.AUTH_TOKEN);
+                                dispatch(logout());
+                            }}
+                        >
+                            OK
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
 
             {/* API Key Dialog */}
             <AlertDialog

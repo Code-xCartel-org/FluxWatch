@@ -4,34 +4,22 @@ import {CheckCircle} from "lucide-react";
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
 import {AppPasswordField} from "@/components/form-fields/app-password-filed";
 import {AppFormWrapper} from "@/components/form-fields/app-form-wrapper";
-import {
-    type ChangePasswordFormValues,
-    changePasswordSchema,
-    changePasswordWithOldSchema,
-} from "@/schemas/auth";
+import {type ChangePasswordFormValues, changePasswordSchema} from "@/schemas/auth";
 import {useChangePasswordMutation} from "@/services/authApi";
 import type {ReactNode} from "react";
 
 interface ChangePasswordFormProps {
     token?: string;
-    requireOldPassword?: boolean;
     onSuccess?: () => void;
     successAction?: ReactNode;
 }
 
-export function ChangePasswordForm({
-    token,
-    requireOldPassword,
-    onSuccess,
-    successAction,
-}: ChangePasswordFormProps) {
+export function ChangePasswordForm({token, onSuccess, successAction}: ChangePasswordFormProps) {
     const [changePassword, {isLoading, isSuccess, error}] = useChangePasswordMutation();
 
     const form = useForm<ChangePasswordFormValues>({
-        resolver: zodResolver(
-            requireOldPassword ? changePasswordWithOldSchema : changePasswordSchema,
-        ),
-        defaultValues: {oldPassword: "", password: "", confirmPassword: ""},
+        resolver: zodResolver(changePasswordSchema),
+        defaultValues: {password: "", confirmPassword: ""},
     });
 
     const onSubmit = form.handleSubmit(async (values) => {
@@ -39,7 +27,6 @@ export function ChangePasswordForm({
             await changePassword({
                 password: values.password,
                 ...(token && {token}),
-                ...(requireOldPassword && {oldPassword: values.oldPassword}),
             }).unwrap();
             onSuccess?.();
         } catch (err) {
@@ -65,14 +52,8 @@ export function ChangePasswordForm({
     return (
         <Card className="border-muted w-full max-w-md shadow-lg">
             <CardHeader className="space-y-1 text-center">
-                <CardTitle className="text-2xl font-bold">
-                    {requireOldPassword ? "Change password" : "Set new password"}
-                </CardTitle>
-                <CardDescription>
-                    {requireOldPassword
-                        ? "Enter your current and new password"
-                        : "Enter your new password below"}
-                </CardDescription>
+                <CardTitle className="text-2xl font-bold">Change password</CardTitle>
+                <CardDescription>Enter your new password below</CardDescription>
             </CardHeader>
             <CardContent>
                 <AppFormWrapper
@@ -81,14 +62,6 @@ export function ChangePasswordForm({
                     error={error}
                     buttonText="Change password"
                 >
-                    {requireOldPassword && (
-                        <AppPasswordField
-                            name="oldPassword"
-                            label="Current Password"
-                            control={form.control}
-                            disabled={isLoading}
-                        />
-                    )}
                     <AppPasswordField
                         name="password"
                         label="New Password"

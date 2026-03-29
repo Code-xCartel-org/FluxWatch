@@ -42,7 +42,6 @@ const passwordField = z
 
 export const changePasswordSchema = z
     .object({
-        oldPassword: z.string().optional(),
         password: passwordField,
         confirmPassword: passwordField,
     })
@@ -50,13 +49,5 @@ export const changePasswordSchema = z
         message: "Passwords don't match",
         path: ["confirmPassword"],
     });
-
-export const changePasswordWithOldSchema = changePasswordSchema.refine(
-    (data) => !!data.oldPassword && data.oldPassword.length >= 8,
-    {
-        message: "Old password must be at least 8 characters.",
-        path: ["oldPassword"],
-    },
-);
 
 export type ChangePasswordFormValues = z.infer<typeof changePasswordSchema>;

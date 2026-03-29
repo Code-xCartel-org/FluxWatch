@@ -72,11 +72,8 @@ export const authApi = baseApi.injectEndpoints({
             }),
         }),
 
-        changePassword: builder.mutation<
-            {msg: string},
-            {password: string; token?: string; oldPassword?: string}
-        >({
-            query: ({token, password, oldPassword}) => ({
+        changePassword: builder.mutation<{msg: string}, {password: string; token?: string}>({
+            query: ({token, password}) => ({
                 url: API_ENDPOINTS.AUTH.CHANGE_PASSWORD,
                 method: HTTP_METHODS.POST,
                 ...(token && {
@@ -84,7 +81,7 @@ export const authApi = baseApi.injectEndpoints({
                         [HEADERS.AUTHORIZATION]: `${HEADERS.TOKEN} ${token}`,
                     },
                 }),
-                body: {password, ...(oldPassword && {oldPassword})},
+                body: {password},
             }),
         }),
 
