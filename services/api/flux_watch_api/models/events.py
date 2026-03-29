@@ -54,7 +54,7 @@ class EventCreate(APIModel):
 
 
 class Event(EventCreate):
-    event_id: UUID
+    event_id: UUID | None
     occurred_at: datetime
     event_version: int = 1
     parent: str | None
