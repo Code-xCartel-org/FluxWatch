@@ -96,7 +96,7 @@ impl RedisClient {
 
         // Parse event_type
         let event_type = match event_type_str.as_str() {
-            "SystemMetrics" => EventType::SystemMetrics,
+            "system.metric" => EventType::SystemMetrics,
             _ => {
                 eprintln!("Unknown event type: {}", event_type_str);
                 return None;
