@@ -31,7 +31,7 @@ class APIModel(BaseModel):
         return d
 
 
-class ResourceModel(APIModel):
+class ResourceModel(BaseModel):
     """Mixin that adds standard resource fields (id, created_at, updated_at) to response models."""
 
     id: UUID

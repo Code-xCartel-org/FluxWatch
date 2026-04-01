@@ -18,7 +18,7 @@ class ResidentPlugin(Plugin):
     def authenticate(self, auth_user: AuthUser, **kwargs) -> AccountSessionORM:
         try:
             account: AccountORM = self._handler.get_one(
-                AccountSearch, {"principal": auth_user.principal}
+                AccountSearch, principal=auth_user.principal
             )
         except NotFoundError as e:
             raise UnauthorizedError("Invalid credentials") from e

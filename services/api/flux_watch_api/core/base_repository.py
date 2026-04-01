@@ -21,6 +21,10 @@ class Repository:
     def session_account(self) -> Account | None:
         return getattr(self._request.state, "session", None)
 
+    @property
+    def principal(self) -> str:
+        return self.session_account.principal
+
     def publish(self, stream, fields):
         self._redis.publish(stream, fields)
 
