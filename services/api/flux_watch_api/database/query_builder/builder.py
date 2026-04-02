@@ -9,11 +9,8 @@ class QueryBuilder:
     Executes feature pipeline + applies result shaping (sorting & pagination)
     """
 
-    def __init__(self, schema_cls, params: dict):
-        self.schema = schema_cls
-        self.params = params
-        self.context = {"params": params}
-
+    def __init__(self, schema_cls, **kwargs):
+        self.schema = schema_cls(**kwargs)
         self.sorting = Sorting()
         self.pagination = Pagination()
 
@@ -22,12 +19,13 @@ class QueryBuilder:
         for feature in self.schema.features:
             if not isinstance(feature, QueryFeature):
                 raise TypeError(f"Feature {feature} is not a QueryFeature")
-            query = feature.apply(query, self.context)
+            query = feature.apply(query, self.schema)
         return query
 
     def build(self, paginate: bool = True, sort: bool = True, with_counts: bool = False):
         base_query = self._build_base()
-        model = self.context["model"]
+        model = self.schema.model
+        params = self.schema.params
 
         data_query = base_query
 
@@ -35,14 +33,14 @@ class QueryBuilder:
             data_query = self.sorting.apply(
                 query=data_query,
                 model=model,
-                params=self.params,
+                params=params,
                 default_ordering=getattr(self.schema, "default_ordering", None),
             )
 
         if paginate:
             data_query = self.pagination.apply(
                 query=data_query,
-                params=self.params,
+                params=params,
                 max_page_size=getattr(self.schema, "max_page_size", None),
             )
 

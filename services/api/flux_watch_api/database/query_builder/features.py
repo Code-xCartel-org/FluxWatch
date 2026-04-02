@@ -5,14 +5,15 @@ from flux_watch_api.database.query_builder.base import QueryFeature
 
 class ModelFeature(QueryFeature):
     """
-    Initializes the query with the ORM model.
+    Initializes the query with the ORM model and stores it on the schema
+    so subsequent features can access it via schema.model.
     """
 
     def __init__(self, model):
         self.model = model
 
-    def apply(self, query, context):
-        context["model"] = self.model
+    def apply(self, query, schema):
+        schema.model = self.model
         return select(self.model)
 
 
@@ -37,9 +38,9 @@ class FilterFeature(QueryFeature):
         self.field = field
         self.param_prefix = param_prefix or field
 
-    def apply(self, query, context):
-        model = context["model"]
-        params = context["params"]
+    def apply(self, query, schema):
+        model = schema.model
+        params = schema.params.model_dump(exclude_none=True)
 
         column = getattr(model, self.field, None)
         if column is None:
@@ -70,11 +71,9 @@ class SearchFeature(QueryFeature):
         self.param_name = param_name
         self.fields = fields
 
-    def apply(self, query, context):
-        model = context["model"]
-        params = context["params"]
-
-        value = params.get(self.param_name)
+    def apply(self, query, schema):
+        model = schema.model
+        value = getattr(schema.params, self.param_name, None)
         if not value:
             return query
 

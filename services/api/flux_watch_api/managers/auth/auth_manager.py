@@ -94,7 +94,7 @@ class AuthManager:
             auth_user, _ = self._build_auth_user(auth_header=auth_header)
 
         email = email if email else auth_user.principal
-        account: AccountORM = self.repo.get_one(AccountSearch, {"principal": email})
+        account: AccountORM = self.repo.get_one(AccountSearch, principal=email)
 
         if delete_previous:
             for session in account.sessions:
@@ -106,7 +106,7 @@ class AuthManager:
 
     def get_sessions(self, auth_header: str):
         auth_user, _ = self._build_auth_user(auth_header=auth_header)
-        account: AccountORM = self.repo.get_one(AccountSearch, {"principal": auth_user.principal})
+        account: AccountORM = self.repo.get_one(AccountSearch, principal=auth_user.principal)
 
         active_sessions = [
             Sessions.model_validate(s)
@@ -120,7 +120,7 @@ class AuthManager:
         hashed_pass = self.auth_utils.hash_password(new_password)
 
         _account = self.repo.session_account
-        account = self.repo.get_one(AccountSearch, {"principal": _account.principal})
+        account = self.repo.get_one(AccountSearch, principal=_account.principal)
 
         if self.auth_utils.validate_password(new_password, account.credentials.password_hash):
             raise AlreadyExistsError(detail="New password cannot be same as old password")

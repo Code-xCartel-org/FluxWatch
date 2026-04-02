@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 import bcrypt
 
 from flux_watch_api.core.base_repository import Repository
-from flux_watch_api.database.query_builder.base import QueryModel
+from flux_watch_api.database.query_builder.base import ParamsBase, QueryModel
 from flux_watch_api.database.query_builder.features import FilterFeature, ModelFeature
 from flux_watch_api.errors.rest_errors import TooManyRequestsError, UnauthorizedError
 from flux_watch_api.managers.auth.plugins.abstract import Plugin
@@ -15,6 +15,12 @@ from flux_watch_api.utils.utilities import key_auth_user
 
 
 class KeySearch(QueryModel):
+    class Params(ParamsBase):
+        is_active: bool
+        page_size: int = 200
+
+    params: Params
+
     features = [
         ModelFeature(AccountApiKeyORM),
         FilterFeature("is_active"),
@@ -30,7 +36,7 @@ class KeyPlugin(Plugin):
     def authenticate(self, auth_user: AuthUser, **kwargs) -> AccountSessionORM:
         now = datetime.now(timezone.utc)
 
-        candidates, _ = self._handler.get_many(KeySearch, {"is_active": True})
+        candidates, _ = self._handler.get_many(KeySearch, is_active=True)
 
         key = None
         for key_obj in candidates:

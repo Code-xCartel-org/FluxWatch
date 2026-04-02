@@ -30,8 +30,8 @@ class SQLClient:
         except IntegrityError as err:
             raise AlreadyExistsError from err
 
-    def get_one(self, search_model: QueryModel, params) -> T | None:
-        builder = QueryBuilder(search_model, params)
+    def get_one(self, search_model: QueryModel, **kwargs) -> T | None:
+        builder = QueryBuilder(search_model, **kwargs)
         query, _ = builder.build(paginate=False, sort=False)
         logger.info(f"executing query: {query}")
         result = self.session.execute(query).scalar_one_or_none()
@@ -39,8 +39,8 @@ class SQLClient:
             raise NotFoundError
         return result
 
-    def get_many(self, search_model: QueryModel, params) -> T | None:
-        builder = QueryBuilder(search_model, params)
+    def get_many(self, search_model: QueryModel, **kwargs) -> T | None:
+        builder = QueryBuilder(search_model, **kwargs)
         data_query, count_query = builder.build(with_counts=True)
         logger.info(f"executing query: {data_query}")
         rows = self.session.execute(data_query).scalars().all()
