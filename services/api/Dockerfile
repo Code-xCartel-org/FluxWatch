@@ -1,7 +1,7 @@
 # ── Stage 1: dependency export ────────────────────────────────────────────────
 # Uses Poetry only to export a plain requirements.txt so the final image
 # has no Poetry overhead at all.
-FROM python:3.11-slim AS builder
+FROM python:3.13-slim AS builder
 
 WORKDIR /build
 
@@ -15,12 +15,14 @@ RUN poetry export --only main --without-hashes --format=requirements.txt \
 
 
 # ── Stage 2: production image ─────────────────────────────────────────────────
-FROM python:3.11-slim AS runtime
+FROM python:3.13-slim AS runtime
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
 WORKDIR /app
+
+RUN apt-get update && apt-get upgrade -y --no-install-recommends && rm -rf /var/lib/apt/lists/*
 
 # Install deps from the exported requirements file
 COPY --from=builder /build/requirements.txt ./
