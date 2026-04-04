@@ -39,6 +39,14 @@ def mock_db() -> MagicMock:
     db = MagicMock(spec=Database)
     db.engine = MagicMock()
     db.session_local = MagicMock()
+
+    # get_session must be a real generator so FastAPI's dependency injection
+    # can iterate it via `yield from`. A plain MagicMock return value causes
+    # "RuntimeError: generator didn't yield" when the DI chain is resolved.
+    def _session_gen():
+        yield MagicMock()
+
+    db.get_session.side_effect = _session_gen
     return db
 
 
@@ -80,7 +88,7 @@ def app(mock_db: MagicMock, mock_redis: MagicMock):
 @pytest.fixture
 def client(app) -> Generator[TestClient]:
     """Unauthenticated test client."""
-    with TestClient(app, raise_server_exceptions=False) as c:
+    with TestClient(app, raise_server_exceptions=True) as c:
         yield c
 
 

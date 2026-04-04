@@ -167,6 +167,6 @@ class TestListEvents:
 
         authed_client.get(f"{BASE}?pageSize=20&page=2")
 
-        call_kwargs = mock_events_repo.get_all_events.call_args[0][0]
+        call_kwargs = mock_events_repo.get_all_events.call_args.kwargs
         assert call_kwargs["page_size"] == 20
         assert call_kwargs["page"] == 2
