@@ -41,7 +41,7 @@ class ServerSentEvents:
             else:
                 logger.debug("No change in status")
 
-            await asyncio.sleep(self.config.STREAM_DELAY)
+            await asyncio.sleep(int(self.config.STREAM_DELAY))
 
     async def stream(self, fn: Callable, args: dict, request: Request):
         return EventSourceResponse(self._stream_generator(fn, args, request))
