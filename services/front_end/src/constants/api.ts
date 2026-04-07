@@ -26,5 +26,6 @@ export const API_ENDPOINTS = {
     EVENTS: {
         LIST: "/events",
         DETAIL: (id: string) => `/events/${id}`,
+        STREAM: "/stream/events",
     },
 } as const;
