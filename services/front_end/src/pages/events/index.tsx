@@ -1,7 +1,7 @@
-import {useGetEventsQuery} from "@/services/eventsApi";
+import {useStreamEventsQuery} from "@/services/eventsApi";
 
 const Events = () => {
-    const {data, isLoading, isError} = useGetEventsQuery({
+    const {data, isLoading, isError} = useStreamEventsQuery({
         pageSize: 20,
         page: 1,
     });
